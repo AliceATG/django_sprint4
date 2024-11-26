@@ -63,6 +63,7 @@ class Post(BaseModel):
     Модель публикации с заголовком, текстом, изображением, датой публикации,
     связанная с автором, категорией и местоположением.
     """
+
     title = models.CharField(max_length=256, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
@@ -107,6 +108,7 @@ class Comment(BaseModel):
     """
     Модель комментария с текстом, связанная с публикацией и автором.
     """
+    
     text = models.TextField('Текст комментария')
     post = models.ForeignKey(
         Post,
