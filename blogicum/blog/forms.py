@@ -7,7 +7,7 @@ User = get_user_model()
 
 class PostForm(forms.ModelForm):
     """Форма для создания и редактирования постов."""
-    
+
     class Meta:
         model = Post
         fields = ('title', 'text', 'pub_date', 'category', 'location', 'image')

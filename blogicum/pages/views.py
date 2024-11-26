@@ -28,5 +28,5 @@ def page_not_found(request, exception):
 
 def server_error(request):
     """Функция обработки ошибки 500 (Ошибка на сервере)."""
-    
+
     return render(request, 'pages/500.html', status=500)

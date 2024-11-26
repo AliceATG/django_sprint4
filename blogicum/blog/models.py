@@ -10,6 +10,7 @@ class BaseModel(models.Model):
     Абстрактная модель, содержащая общие поля:
       статус публикации и дату создания.
     """
+
     is_published = models.BooleanField(
         default=True, verbose_name='Опубликовано',
         help_text='Снимите галочку, чтобы скрыть публикацию.')
@@ -45,9 +46,8 @@ class Category(BaseModel):
 
 
 class Location(BaseModel):
-    """
-    Модель местоположения с названием места.
-    """
+    """Модель местоположения с названием места."""
+
     name = models.CharField(max_length=256, verbose_name='Название места')
 
     class Meta:
@@ -105,10 +105,8 @@ class Post(BaseModel):
 
 
 class Comment(BaseModel):
-    """
-    Модель комментария с текстом, связанная с публикацией и автором.
-    """
-    
+    """Модель комментария с текстом, связанная с публикацией и автором."""
+
     text = models.TextField('Текст комментария')
     post = models.ForeignKey(
         Post,

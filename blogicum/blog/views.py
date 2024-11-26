@@ -36,10 +36,12 @@ class PostMixin:
 
 
 class PostCreateView(PostMixin, LoginRequiredMixin, CreateView):
-    """Класс для создания нового поста.
+    """
+    Класс для создания нового поста.
      - При успешном сохранении поста, автором указывается текущий пользователь.
-     - После создания перенаправляет на профиль автора."""
-    
+     - После создания перенаправляет на профиль автора.
+     """
+
     form_class = PostForm
 
     def form_valid(self, form):
@@ -51,9 +53,11 @@ class PostCreateView(PostMixin, LoginRequiredMixin, CreateView):
 
 
 class PostUpdateView(PostMixin, LoginRequiredMixin, UpdateView):
-    """Класс для редактирования существующего поста. Требует авторизации.
+    """
+    Класс для редактирования существующего поста. Требует авторизации.
     - Позволяет редактировать пост только его автору.
-    - После обновления перенаправляет на страницу деталей поста."""
+    - После обновления перенаправляет на страницу деталей поста.
+    """
 
     form_class = PostForm
     pk_url_kwarg = 'post_id'
@@ -69,9 +73,11 @@ class PostUpdateView(PostMixin, LoginRequiredMixin, UpdateView):
 
 
 class PostDeleteView(PostMixin, LoginRequiredMixin, DeleteView):
-    """Класс для удаления поста. Требует авторизации.
+    """
+    Класс для удаления поста. Требует авторизации.
     - Удалять пост может только его автор.
-    - После удаления перенаправляет на профиль автора."""
+    - После удаления перенаправляет на профиль автора.
+    """
 
     pk_url_kwarg = 'post_id'
 
@@ -90,9 +96,11 @@ class PostDeleteView(PostMixin, LoginRequiredMixin, DeleteView):
 
 
 class IndexListView(ListView):
-    """Класс для отображения списка всех опубликованных постов.
+    """
+    Класс для отображения списка всех опубликованных постов.
     - Пагинация по 10 постов на страницу.
-    - Посты сортируются по дате публикации."""
+    - Посты сортируются по дате публикации.
+    """
 
     model = Post
     paginate_by = POSTS_PER_PAGE
@@ -109,9 +117,11 @@ class IndexListView(ListView):
 
 
 class ProfileListView(ListView):
-    """Класс для отображения профиля пользователя и его постов.
+    """
+    Класс для отображения профиля пользователя и его постов.
     - Пагинация по 10 постов на страницу.
-    - Выводит информацию о пользователе, чей профиль отображается."""
+    - Выводит информацию о пользователе, чей профиль отображается.
+    """
 
     model = Post
     paginate_by = POSTS_PER_PAGE
@@ -133,9 +143,11 @@ class ProfileListView(ListView):
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
-    """Класс для редактирования профиля текущего пользователя.
+    """
+    Класс для редактирования профиля текущего пользователя.
     - Позволяет обновить данные профиля.
-    - После сохранения перенаправляет обратно на страницу профиля."""
+    - После сохранения перенаправляет обратно на страницу профиля.
+    """
 
     template_name = 'blog/user.html'
     form_class = ProfileEditForm
@@ -148,7 +160,8 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class PostDetailView(DetailView):
-    """Класс для отображения деталей поста.
+    """
+    Класс для отображения деталей поста.
     - Проверяет доступность поста.
     - Если пост недоступен, и пользователь не является автором,
     выдаёт ошибку 404.
@@ -175,10 +188,12 @@ class PostDetailView(DetailView):
 
 
 class CategoryPostsListView(ListView):
-    """Класс для отображения постов определённой категории.
+    """
+    Класс для отображения постов определённой категории.
     - Проверяет, опубликована ли категория.
     - Пагинация по 10 постов на страницу.
-    - Сортирует посты по дате публикации."""
+    - Сортирует посты по дате публикации.
+    """
 
     model = Post
     paginate_by = POSTS_PER_PAGE
@@ -206,9 +221,11 @@ class CategoryPostsListView(ListView):
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
-    """Класс для создания нового комментария. Требует авторизации.
+    """
+    Класс для создания нового комментария. Требует авторизации.
     - Привязывает комментарий к текущему пользователю и посту.
-    - После успешного создания перенаправляет на страницу деталей поста."""
+    - После успешного создания перенаправляет на страницу деталей поста.
+    """
 
     model = Comment
     form_class = CommentForm
@@ -230,9 +247,11 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
 
 class CommentMixin(LoginRequiredMixin, View):
-    """Базовый класс для работы с комментариями.
+    """
+    Базовый класс для работы с комментариями.
     - Проверяет, что текущий пользователь является автором комментария.
-    - Если пользователь не автор, перенаправляет на страницу деталей поста."""
+    - Если пользователь не автор, перенаправляет на страницу деталей поста.
+    """
 
     model = Comment
     template_name = "blog/comment.html"
@@ -260,5 +279,5 @@ class CommentUpdateView(CommentMixin, UpdateView):
 
 class CommentDeleteView(CommentMixin, DeleteView):
     """Класс для удаления комментария."""
-    
+
     pass
