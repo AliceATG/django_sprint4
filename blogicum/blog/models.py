@@ -26,6 +26,7 @@ class Category(BaseModel):
     Модель категории с заголовком, описанием и уникальным идентификатором
     (slug).
     """
+    
     title = models.CharField(max_length=256, verbose_name='Заголовок')
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(

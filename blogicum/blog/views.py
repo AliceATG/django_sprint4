@@ -18,7 +18,6 @@ POSTS_PER_PAGE = 10
 
 def get_post_data(kwargs):
     """Функция для получения объекта Post из базы данных."""
-
     return get_object_or_404(
         Post,
         pk=kwargs['post_id'],
@@ -40,7 +39,7 @@ class PostCreateView(PostMixin, LoginRequiredMixin, CreateView):
     Класс для создания нового поста.
      - При успешном сохранении поста, автором указывается текущий пользователь.
      - После создания перенаправляет на профиль автора.
-     """
+    """
 
     form_class = PostForm
 
