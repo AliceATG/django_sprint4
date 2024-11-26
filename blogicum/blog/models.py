@@ -6,6 +6,10 @@ User = get_user_model()
 
 
 class BaseModel(models.Model):
+    """
+    Абстрактная модель, содержащая общие поля:
+      статус публикации и дату создания.
+    """
     is_published = models.BooleanField(
         default=True, verbose_name='Опубликовано',
         help_text='Снимите галочку, чтобы скрыть публикацию.')
@@ -17,6 +21,10 @@ class BaseModel(models.Model):
 
 
 class Category(BaseModel):
+    """
+    Модель категории с заголовком, описанием и уникальным идентификатором
+    (slug).
+    """
     title = models.CharField(max_length=256, verbose_name='Заголовок')
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
@@ -37,6 +45,9 @@ class Category(BaseModel):
 
 
 class Location(BaseModel):
+    """
+    Модель местоположения с названием места.
+    """
     name = models.CharField(max_length=256, verbose_name='Название места')
 
     class Meta:
@@ -48,6 +59,10 @@ class Location(BaseModel):
 
 
 class Post(BaseModel):
+    """
+    Модель публикации с заголовком, текстом, изображением, датой публикации,
+    связанная с автором, категорией и местоположением.
+    """
     title = models.CharField(max_length=256, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
@@ -89,6 +104,9 @@ class Post(BaseModel):
 
 
 class Comment(BaseModel):
+    """
+    Модель комментария с текстом, связанная с публикацией и автором.
+    """
     text = models.TextField('Текст комментария')
     post = models.ForeignKey(
         Post,

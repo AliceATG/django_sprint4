@@ -17,6 +17,7 @@ POSTS_PER_PAGE = 10
 
 
 def get_post_data(kwargs):
+    """Функция для получения объекта Post из базы данных."""
     return get_object_or_404(
         Post,
         pk=kwargs['post_id'],
@@ -27,11 +28,15 @@ def get_post_data(kwargs):
 
 
 class PostMixin:
+    """Базовый класс для работы с моделями постов."""
     model = Post
     template_name = 'blog/create.html'
 
 
 class PostCreateView(PostMixin, LoginRequiredMixin, CreateView):
+    """Класс для создания нового поста.
+     - При успешном сохранении поста, автором указывается текущий пользователь.
+     - После создания перенаправляет на профиль автора."""
     form_class = PostForm
 
     def form_valid(self, form):
@@ -43,6 +48,9 @@ class PostCreateView(PostMixin, LoginRequiredMixin, CreateView):
 
 
 class PostUpdateView(PostMixin, LoginRequiredMixin, UpdateView):
+    """Класс для редактирования существующего поста. Требует авторизации.
+    - Позволяет редактировать пост только его автору.
+    - После обновления перенаправляет на страницу деталей поста."""
     form_class = PostForm
     pk_url_kwarg = 'post_id'
 
@@ -57,6 +65,9 @@ class PostUpdateView(PostMixin, LoginRequiredMixin, UpdateView):
 
 
 class PostDeleteView(PostMixin, LoginRequiredMixin, DeleteView):
+    """Класс для удаления поста. Требует авторизации.
+    - Удалять пост может только его автор.
+    - После удаления перенаправляет на профиль автора."""
     pk_url_kwarg = 'post_id'
 
     def dispatch(self, request, *args, **kwargs):
@@ -74,6 +85,9 @@ class PostDeleteView(PostMixin, LoginRequiredMixin, DeleteView):
 
 
 class IndexListView(ListView):
+    """Класс для отображения списка всех опубликованных постов.
+    - Пагинация по 10 постов на страницу.
+    - Посты сортируются по дате публикации."""
     model = Post
     paginate_by = POSTS_PER_PAGE
     template_name = 'blog/index.html'
@@ -89,6 +103,9 @@ class IndexListView(ListView):
 
 
 class ProfileListView(ListView):
+    """Класс для отображения профиля пользователя и его постов.
+    - Пагинация по 10 постов на страницу.
+    - Выводит информацию о пользователе, чей профиль отображается."""
     model = Post
     paginate_by = POSTS_PER_PAGE
     template_name = 'blog/profile.html'
@@ -109,6 +126,9 @@ class ProfileListView(ListView):
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    """Класс для редактирования профиля текущего пользователя.
+    - Позволяет обновить данные профиля.
+    - После сохранения перенаправляет обратно на страницу профиля."""
     template_name = 'blog/user.html'
     form_class = ProfileEditForm
 
@@ -120,6 +140,12 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class PostDetailView(DetailView):
+    """Класс для отображения деталей поста.
+    - Проверяет доступность поста.
+    - Если пост недоступен, и пользователь не является автором,
+    выдаёт ошибку 404.
+    - Выводит форму для добавления комментариев и список комментариев к посту.
+    """
     model = Post
     template_name = 'blog/detail.html'
 
@@ -140,6 +166,10 @@ class PostDetailView(DetailView):
 
 
 class CategoryPostsListView(ListView):
+    """Класс для отображения постов определённой категории.
+    - Проверяет, опубликована ли категория.
+    - Пагинация по 10 постов на страницу.
+    - Сортирует посты по дате публикации."""
     model = Post
     paginate_by = POSTS_PER_PAGE
     template_name = 'blog/category.html'
@@ -166,6 +196,9 @@ class CategoryPostsListView(ListView):
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
+    """Класс для создания нового комментария. Требует авторизации.
+    - Привязывает комментарий к текущему пользователю и посту.
+    - После успешного создания перенаправляет на страницу деталей поста."""
     model = Comment
     form_class = CommentForm
     template_name = "blog/comment.html"
@@ -186,6 +219,9 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
 
 class CommentMixin(LoginRequiredMixin, View):
+    """Базовый класс для работы с комментариями.
+    - Проверяет, что текущий пользователь является автором комментария.
+    - Если пользователь не автор, перенаправляет на страницу деталей поста."""
     model = Comment
     template_name = "blog/comment.html"
     pk_url_kwarg = "comment_id"
@@ -205,8 +241,10 @@ class CommentMixin(LoginRequiredMixin, View):
 
 
 class CommentUpdateView(CommentMixin, UpdateView):
+    """Класс для редактирования комментария."""
     form_class = CommentForm
 
 
 class CommentDeleteView(CommentMixin, DeleteView):
+    """Класс для удаления комментария."""
     pass
