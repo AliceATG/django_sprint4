@@ -8,27 +8,39 @@ User = get_user_model()
 class BaseModel(models.Model):
     """
     Абстрактная модель, содержащая общие поля:
-      статус публикации и дату создания.
+    - is_published: статус публикации (видимость записи).
+    - created_at: дата создания записи.
     """
 
     is_published = models.BooleanField(
-        default=True, verbose_name='Опубликовано',
-        help_text='Снимите галочку, чтобы скрыть публикацию.')
+        default=True,
+        verbose_name='Опубликовано',
+        help_text='Снимите галочку, чтобы скрыть публикацию.'
+    )
     created_at = models.DateTimeField(
-        auto_now_add=True, verbose_name='Добавлено')
+        auto_now_add=True,
+        verbose_name='Добавлено'
+    )
 
     class Meta:
-        abstract = True
+        abstract = True  # Указывает, что это абстрактная модель.
 
 
 class Category(BaseModel):
     """
-    Модель категории с заголовком, описанием и уникальным идентификатором
-    (slug).
+    Модель категории:
+    - title: заголовок категории.
+    - description: описание категории.
+    - slug: уникальный идентификатор для URL.
     """
 
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
-    description = models.TextField(verbose_name='Описание')
+    title = models.CharField(
+        max_length=256,
+        verbose_name='Заголовок'
+    )
+    description = models.TextField(
+        verbose_name='Описание'
+    )
     slug = models.SlugField(
         unique=True,
         verbose_name='Идентификатор',
@@ -47,9 +59,15 @@ class Category(BaseModel):
 
 
 class Location(BaseModel):
-    """Модель местоположения с названием места."""
+    """
+    Модель местоположения:
+    - name: название места.
+    """
 
-    name = models.CharField(max_length=256, verbose_name='Название места')
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Название места'
+    )
 
     class Meta:
         verbose_name = 'местоположение'
@@ -61,12 +79,24 @@ class Location(BaseModel):
 
 class Post(BaseModel):
     """
-    Модель публикации с заголовком, текстом, изображением, датой публикации,
-    связанная с автором, категорией и местоположением.
+    Модель публикации:
+    - title: заголовок публикации.
+    - text: текст публикации.
+    - pub_date: дата и время публикации (поддержка отложенной публикации).
+    - image: изображение для публикации (необязательное поле).
+    - author: автор публикации (связь с моделью пользователя).
+    - location: местоположение, связанное с публикацией (необязательное поле).
+    - category: категория, к которой относится публикация
+    (необязательное поле).
     """
 
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
-    text = models.TextField(verbose_name='Текст')
+    title = models.CharField(
+        max_length=256,
+        verbose_name='Заголовок'
+    )
+    text = models.TextField(
+        verbose_name='Текст'
+    )
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
         help_text=(
@@ -86,13 +116,18 @@ class Post(BaseModel):
         related_name='post'
     )
     location = models.ForeignKey(
-        Location, on_delete=models.SET_NULL,
-        null=True, blank=True, verbose_name='Местоположение',
+        Location,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Местоположение',
         related_name='post'
     )
     category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL,
-        null=True, verbose_name='Категория',
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Категория',
         related_name='post'
     )
 
@@ -106,19 +141,27 @@ class Post(BaseModel):
 
 
 class Comment(BaseModel):
-    """Модель комментария с текстом, связанная с публикацией и автором."""
+    """
+    Модель комментария:
+    - text: текст комментария.
+    - post: публикация, к которой относится комментарий.
+    - author: автор комментария (связь с моделью пользователя).
+    """
 
-    text = models.TextField('Текст комментария')
+    text = models.TextField(
+        verbose_name='Текст комментария'
+    )
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
         related_name='comment',
-        verbose_name='публикация'
+        verbose_name='Публикация'
     )
-
-    author = models.ForeignKey(User,
-                               on_delete=models.CASCADE,
-                               verbose_name='Автор комментария')
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор комментария'
+    )
 
     class Meta:
         verbose_name = 'комментарий'

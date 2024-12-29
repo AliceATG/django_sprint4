@@ -10,14 +10,13 @@ from .forms import PostForm, CommentForm, ProfileEditForm
 from django.contrib.auth import get_user_model
 from django.http import Http404
 
-
 User = get_user_model()
 
-POSTS_PER_PAGE = 10
+POSTS_PAGIN = 10
 
 
 def get_post_data(kwargs):
-    """Функция для получения объекта Post из базы данных."""
+    """Получить объект Post из базы данных по параметрам."""
     return get_object_or_404(
         Post,
         pk=kwargs['post_id'],
@@ -25,6 +24,11 @@ def get_post_data(kwargs):
         is_published=True,
         category__is_published=True,
     )
+
+
+def check_author_permission(instance, user):
+    """Проверить, является ли пользователь автором объекта."""
+    return instance.author == user
 
 
 class PostMixin:
@@ -37,8 +41,8 @@ class PostMixin:
 class PostCreateView(PostMixin, LoginRequiredMixin, CreateView):
     """
     Класс для создания нового поста.
-     - При успешном сохранении поста, автором указывается текущий пользователь.
-     - После создания перенаправляет на профиль автора.
+    - При успешном сохранении поста, автором указывается текущий пользователь.
+    - После создания перенаправляет на профиль автора.
     """
 
     form_class = PostForm
@@ -62,13 +66,14 @@ class PostUpdateView(PostMixin, LoginRequiredMixin, UpdateView):
     pk_url_kwarg = 'post_id'
 
     def dispatch(self, request, *args, **kwargs):
-        if self.get_object().author != request.user:
+        post = self.get_object()
+        if not check_author_permission(post, request.user):
             return redirect('blog:post_detail', id=self.kwargs['post_id'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('blog:post_detail',
-                       kwargs={'id': self.kwargs['post_id']})
+        return reverse('blog:post_detail', kwargs={'id':
+                                                   self.kwargs['post_id']})
 
 
 class PostDeleteView(PostMixin, LoginRequiredMixin, DeleteView):
@@ -81,7 +86,8 @@ class PostDeleteView(PostMixin, LoginRequiredMixin, DeleteView):
     pk_url_kwarg = 'post_id'
 
     def dispatch(self, request, *args, **kwargs):
-        if self.get_object().author != request.user:
+        post = self.get_object()
+        if not check_author_permission(post, request.user):
             return redirect('blog:post_detail', id=self.kwargs['post_id'])
         return super().dispatch(request, *args, **kwargs)
 
@@ -102,7 +108,7 @@ class IndexListView(ListView):
     """
 
     model = Post
-    paginate_by = POSTS_PER_PAGE
+    paginate_by = POSTS_PAGIN
     template_name = 'blog/index.html'
 
     def get_queryset(self):
@@ -123,7 +129,7 @@ class ProfileListView(ListView):
     """
 
     model = Post
-    paginate_by = POSTS_PER_PAGE
+    paginate_by = POSTS_PAGIN
     template_name = 'blog/profile.html'
 
     def get_queryset(self):
@@ -163,7 +169,7 @@ class PostDetailView(DetailView):
     Класс для отображения деталей поста.
     - Проверяет доступность поста.
     - Если пост недоступен, и пользователь не является автором,
-    выдаёт ошибку 404.
+      выдаёт ошибку 404.
     - Выводит форму для добавления комментариев и список комментариев к посту.
     """
 
@@ -195,7 +201,7 @@ class CategoryPostsListView(ListView):
     """
 
     model = Post
-    paginate_by = POSTS_PER_PAGE
+    paginate_by = POSTS_PAGIN
     template_name = 'blog/category.html'
 
     def get_queryset(self):
@@ -261,7 +267,7 @@ class CommentMixin(LoginRequiredMixin, View):
             Comment,
             pk=kwargs['comment_id'],
         )
-        if comment.author != request.user:
+        if not check_author_permission(comment, request.user):
             return redirect('blog:post_detail', id=kwargs['post_id'])
         return super().dispatch(request, *args, **kwargs)
 
